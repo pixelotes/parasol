@@ -1,0 +1,27 @@
+[package]
+name = "parasol"
+version = "0.1.0"
+edition = "2024"
+license = "MIT"
+description = "Browserless, FlareSolverr-compatible Cloudflare challenge solver built on cfsolve"
+
+[dependencies]
+# Pinned: parasol uses cfsolve's hidden transport API (fingerprint::Transport,
+# http::navigate), which is not covered by semver. Bump deliberately.
+cfsolve = { git = "https://github.com/chris124567/cfsolve", rev = "59aef833d271dfdb86b0330c16f737b7b5010d52", default-features = false }
+axum = "0.8"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tokio = { version = "1", features = ["macros", "rt-multi-thread", "sync", "time", "signal"] }
+
+# Cargo only reads [patch] from the top-level manifest, so cfsolve's patched
+# transport crates have to be repeated here, at the same revision.
+[patch.crates-io]
+btls-sys = { git = "https://github.com/chris124567/cfsolve", rev = "59aef833d271dfdb86b0330c16f737b7b5010d52" }
+wreq = { git = "https://github.com/chris124567/cfsolve", rev = "59aef833d271dfdb86b0330c16f737b7b5010d52" }
+http2 = { git = "https://github.com/chris124567/cfsolve", rev = "59aef833d271dfdb86b0330c16f737b7b5010d52" }
+
+[profile.release]
+lto = "thin"
+codegen-units = 1
+strip = true
