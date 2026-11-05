@@ -47,8 +47,15 @@ FLARESOLVERR_URL=http://parasol:8191
 and enable "Use FlareSolverr" on the indexers that need it.
 
 ```sh
+docker run -d --name parasol -p 8191:8191 pixelotes/parasol:arm64
+```
+
+The image is published for arm64 only, on every push to `main`
+(`.github/workflows/docker.yml`, which needs the `DOCKERHUB_USERNAME` and
+`DOCKERHUB_TOKEN` repository secrets). For other architectures, build it:
+
+```sh
 docker build -t parasol .
-docker run -d --name parasol -p 8191:8191 parasol
 ```
 
 ```sh

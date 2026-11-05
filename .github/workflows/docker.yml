@@ -1,0 +1,47 @@
+name: Publish Docker image
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - "**.md"
+      - "LICENSE"
+  workflow_dispatch:
+
+concurrency:
+  group: docker-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-push:
+    # Native arm64 runner: building Rust + BoringSSL under QEMU emulation
+    # takes hours. MangoStack targets arm64 (Raspberry Pi) only.
+    runs-on: ubuntu-24.04-arm
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v4
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          platforms: linux/arm64
+          push: true
+          # `arm64` is the tag MangoStack's docker-compose.yaml pulls; the
+          # per-commit tag allows pinning or rolling back.
+          tags: |
+            pixelotes/parasol:arm64
+            pixelotes/parasol:arm64-${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
