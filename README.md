@@ -16,12 +16,14 @@ Toshokan:
 | --- | --- | --- |
 | Image | 94 MB | 1.1 GB |
 | Idle memory | ~6 MB | ~38 MB |
-| Memory after solving | ~190 MB (one at a time), ~270 MB (four at once) | ~720 MB peak |
+| Memory after solving | ~80 MB, back from a ~100 MB peak | ~720 MB peak |
 | First request to a site | ~7 s (solve) | ~12 s |
 | Later requests | 0.1–0.6 s (cookie reused) | ~12 s unless the client reuses cookies |
 
-Memory after solving is what glibc keeps from the solve, not a leak; it stays
-flat on later requests.
+parasol calls `malloc_trim` after each solve and runs with
+`MALLOC_ARENA_MAX=1`, so glibc hands most of a solve's memory back to the OS.
+Measured over four solves: ~160 MB idle without either, ~80 MB with both.
+mimalloc was tried and kept ~240 MB, so it is not used.
 
 ## How it works
 

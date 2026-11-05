@@ -24,6 +24,22 @@ use serde_json::{Value, json};
 use tokio::sync::Mutex;
 
 const VERSION: &str = env!("CARGO_PKG_VERSION");
+
+/// Hands memory freed by a solve back to the OS. A solve allocates ~100 MB
+/// that glibc would otherwise keep mapped for reuse, so an idle parasol sat at
+/// ~200 MB after its first few solves.
+fn release_memory() {
+    #[cfg(all(target_os = "linux", target_env = "gnu"))]
+    {
+        unsafe extern "C" {
+            fn malloc_trim(pad: usize) -> i32;
+        }
+        // SAFETY: malloc_trim only releases free heap memory; it is thread-safe.
+        unsafe {
+            malloc_trim(0);
+        }
+    }
+}
 const DEFAULT_TIMEOUT_MS: u64 = 60_000;
 
 struct App {
@@ -113,11 +129,9 @@ impl App {
             proxy: self.proxy.clone(),
             ..Options::default()
         };
-        let cleared = self
-            .browser
-            .clear(url, &options)
-            .await
-            .map_err(|e| format!("solving challenge on {host}: {e}"))?;
+        let cleared = self.browser.clear(url, &options).await;
+        release_memory();
+        let cleared = cleared.map_err(|e| format!("solving challenge on {host}: {e}"))?;
         for cookie in &cleared.cookies {
             self.client.add_cookie(&cookie.to_string(), url);
         }

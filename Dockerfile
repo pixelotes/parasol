@@ -26,7 +26,8 @@ COPY --from=build /usr/share/zoneinfo/Etc/UTC /etc/localtime
 COPY --from=build /etc/timezone /etc/timezone
 ENV PARASOL_PROFILE=/profiles/safari-26-ios.json
 # glibc otherwise grows one malloc arena per thread, which balloons RSS on a
-# multi-threaded runtime. Two is plenty for a solver that runs one solve at a time.
-ENV MALLOC_ARENA_MAX=2
+# multi-threaded runtime. With one arena plus the malloc_trim parasol calls
+# after each solve, idle memory after solving drops from ~160 MB to ~80 MB.
+ENV MALLOC_ARENA_MAX=1
 EXPOSE 8191
 ENTRYPOINT ["/parasol"]
