@@ -99,6 +99,22 @@ curl -s localhost:8191/v1 -H 'Content-Type: application/json' \
 - Do not expose it beyond your LAN. Like FlareSolverr, it fetches any URL it
   is given.
 
+## Why no headless browser
+
+Tested 2026-11-05 against Cloudflare-gated sites (btdirectory, EZTV, Uindex,
+Tokyo Toshokan):
+
+- Lightpanda 1.0.3, Obscura 0.2.6 (also built with `stealth`), cloudscraper
+  and Chrome-TLS impersonation alone all stay on the challenge page.
+- A `cf_clearance` earned by cfsolve is rejected when replayed from Lightpanda:
+  the cookie is bound to the Safari TLS fingerprint and user agent, and
+  Lightpanda refuses any user agent containing "Mozilla".
+
+So a browser fallback would add a failed request before every solve. A
+headless browser would only help with pages that need JavaScript to render
+results and sit behind no challenge; none of Scarf's indexers do today. If one
+appears, run cfsolve first and hand only those pages to a browser.
+
 ## License
 
 MIT. cfsolve and its patched dependencies keep their own licenses.
