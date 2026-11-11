@@ -1,0 +1,7 @@
+# Only Cargo.toml, Cargo.lock, rust-toolchain.toml and src/ are copied.
+target/
+.git
+.github
+*.md
+.DS_Store
+.env

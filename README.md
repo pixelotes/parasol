@@ -3,6 +3,8 @@
 A browserless Cloudflare challenge solver that speaks
 [FlareSolverr](https://github.com/FlareSolverr/FlareSolverr)'s `/v1` API.
 
+Part of [MangoStack](https://github.com/pixelotes/MangoStack), a self-hosted media stack for the Raspberry Pi.
+
 parasol wraps [cfsolve](https://github.com/chris124567/cfsolve), which clears
 Cloudflare's "Just a moment..." interstitial with plain HTTP requests by
 replaying a recorded browser profile. No Chromium, no Xvfb. That makes it
@@ -123,6 +125,20 @@ So a browser fallback would add a failed request before every solve. A
 headless browser would only help with pages that need JavaScript to render
 results and sit behind no challenge; none of Scarf's indexers do today. If one
 appears, run cfsolve first and hand only those pages to a browser.
+
+## Part of MangoStack
+
+| App | Role |
+|---|---|
+| [Scarf](https://github.com/pixelotes/scarf) | Indexer proxy (Torznab) |
+| [Parasol](https://github.com/pixelotes/parasol) | Optional Cloudflare solver for Scarf |
+| [Reel](https://github.com/pixelotes/reel) | Movie & TV automation |
+| [Tango](https://github.com/pixelotes/tango) | Web UI and REST API for aria2c |
+| [RMS](https://github.com/pixelotes/rms) | Media server (Jellyfin API) |
+| [Suika](https://github.com/pixelotes/suika) | Manga reader |
+| [Kaze](https://github.com/pixelotes/kaze) | Music server (Subsonic API) |
+| [Sumi](https://github.com/pixelotes/sumi) | EPUB reader |
+| [Dashboarr](https://github.com/pixelotes/dashboarr) | Homepage |
 
 ## License
 
